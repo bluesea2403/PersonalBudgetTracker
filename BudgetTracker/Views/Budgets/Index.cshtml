@@ -1,0 +1,76 @@
+﻿@model IEnumerable<BudgetTracker.Models.Budget>
+
+@{
+    ViewData["Title"] = "Quản lý Ngân sách";
+    var year = ViewData["CurrentYear"];
+}
+
+<div class="content-page-container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title text-info">
+                <i class="fas fa-wallet me-2"></i>@ViewData["Title"]
+            </h1>
+            <p class="text-muted mb-0">📅 Năm @year</p>
+        </div>
+        <div>
+            <a asp-action="Create" class="btn btn-success shadow-sm">
+                <i class="fas fa-plus-circle me-1"></i> Tạo Ngân sách mới
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            Bạn chưa thiết lập ngân sách nào cho năm @year. Hãy bắt đầu bằng cách tạo ngân sách mới!
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-bold">
+                <i class="fas fa-table me-1"></i> Danh sách ngân sách đã thiết lập
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-primary text-dark">
+                            <tr>
+                                <th>📆 Tháng</th>
+                                <th>🏷️ Danh mục</th>
+                                <th>💰 Hạn mức</th>
+                                <th class="text-end">⚙️ Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>Tháng <strong>@item.Month</strong></td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            <i class="@item.Category.Icon me-1"></i>
+                                            @item.Category.Name
+                                        </span>
+                                    </td>
+                                    <td class="fw-bold text-success">@item.Amount.ToString("N0") đ</td>
+                                    <td class="text-end">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

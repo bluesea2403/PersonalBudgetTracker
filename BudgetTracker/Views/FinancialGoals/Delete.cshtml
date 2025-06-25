@@ -1,0 +1,41 @@
+﻿@model BudgetTracker.Models.FinancialGoal
+
+@{
+    ViewData["Title"] = "Xóa Mục tiêu";
+}
+
+<div class="content-page-container">
+    <h1 class="page-title text-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i> @ViewData["Title"]
+    </h1>
+
+    <div class="alert alert-warning mt-3">
+        <h4 class="alert-heading">⚠️ Xác nhận xóa</h4>
+        <p>Bạn có chắc chắn muốn xóa mục tiêu <strong>"@Model.Name"</strong> không? Hành động này <strong>không thể hoàn tác</strong>.</p>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">🎯 Tên mục tiêu</dt>
+                <dd class="col-sm-8">@Model.Name</dd>
+
+                <dt class="col-sm-4">🎯 Số tiền mục tiêu</dt>
+                <dd class="col-sm-8">@Model.TargetAmount.ToString("N0") đ</dd>
+
+                <dt class="col-sm-4">💰 Đã tiết kiệm</dt>
+                <dd class="col-sm-8">@Model.CurrentAmount.ToString("N0") đ</dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="Delete" class="d-flex gap-3">
+        <input type="hidden" asp-for="Id" />
+        <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash-alt me-1"></i> Xác nhận Xóa
+        </button>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại Danh sách
+        </a>
+    </form>
+</div>

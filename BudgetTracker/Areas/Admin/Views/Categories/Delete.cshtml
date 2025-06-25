@@ -1,0 +1,43 @@
+﻿@model BudgetTracker.Models.Category
+
+@{
+    ViewData["Title"] = "Xóa Danh mục";
+}
+
+<div class="content-page-container">
+    <h1 class="page-title text-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i>@ViewData["Title"]
+    </h1>
+
+    <div class="alert alert-warning border-start border-4 border-warning py-3 px-4">
+        <h5 class="mb-2">Bạn có chắc chắn muốn xóa danh mục này?</h5>
+        <p class="mb-0 text-muted">Hành động này không thể hoàn tác. Vui lòng xác nhận kỹ trước khi thực hiện.</p>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h4 class="card-title text-primary mb-3">
+                <i class="@Model.Icon me-2 fa-lg text-secondary"></i> @Model.Name
+            </h4>
+            <dl class="row mb-0">
+                <dt class="col-sm-3 text-muted">Loại</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Type)</dd>
+
+                <dt class="col-sm-3 text-muted">Biểu tượng</dt>
+                <dd class="col-sm-9"><i class="@Model.Icon fa-2x text-dark"></i></dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-danger shadow-sm">
+                <i class="fas fa-trash-alt me-1"></i> Xác nhận xóa
+            </button>
+            <a asp-action="Index" class="btn btn-secondary shadow-sm">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+        </div>
+    </form>
+</div>

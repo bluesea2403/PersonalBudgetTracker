@@ -1,0 +1,213 @@
+﻿@model BudgetTracker.Models.ReportViewModel
+@using System.Globalization;
+@{
+    ViewData["Title"] = "Báo cáo Chi tiêu";
+    var culture = new CultureInfo("vi-VN");
+}
+
+<div class="report-page content-page-container">
+
+    <h1 class="page-title text-info mb-4">
+        📊 @ViewData["Title"]
+    </h1>
+
+    <!-- Biểu mẫu lọc -->
+    <div class="card filter-card shadow-sm mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3 col-sm-6">
+                    <label class="form-label">Từ ngày</label>
+                    <input type="date" class="form-control" name="startDate" value="@ViewData["CurrentStartDate"]">
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <label class="form-label">Đến ngày</label>
+                    <input type="date" class="form-control" name="endDate" value="@ViewData["CurrentEndDate"]">
+                </div>
+                <div class="col-md-4 col-sm-12">
+                    <label class="form-label d-block">Loại giao dịch</label>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="transactionType" id="typeAll" value="All"
+                               autocomplete="off" checked="@(ViewData["CurrentType"] == null || ViewData["CurrentType"].ToString() == "All")">
+                        <label class="btn btn-outline-secondary" for="typeAll">Tất cả</label>
+
+                        <input type="radio" class="btn-check" name="transactionType" id="typeIncome" value="Thu"
+                               autocomplete="off" checked="@(ViewData["CurrentType"]?.ToString() == "Thu")">
+                        <label class="btn btn-outline-success" for="typeIncome">Thu</label>
+
+                        <input type="radio" class="btn-check" name="transactionType" id="typeExpense" value="Chi tiêu"
+                               autocomplete="off" checked="@(ViewData["CurrentType"]?.ToString() == "Chi tiêu")">
+                        <label class="btn btn-outline-danger" for="typeExpense">Chi</label>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-6 d-grid">
+                    <button type="submit" class="btn btn-primary">Xem báo cáo</button>
+                    <button type="button" id="exportPdfBtn" class="btn btn-danger mt-2">Xuất PDF</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Biểu đồ thu chi -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light fw-bold text-primary">
+            <i class="fas fa-chart-line me-2"></i> Xu hướng Thu - Chi 6 tháng gần nhất
+        </div>
+        <div class="card-body">
+            <canvas id="trendChart" style="width: 100%; height: 300px;"></canvas>
+        </div>
+    </div>
+
+    <!-- Bố cục báo cáo -->
+    <div class="row">
+        <!-- Bên trái -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light fw-bold text-primary">🧾 Tóm tắt chi tiêu</div>
+                <div class="card-body">
+                    <p class="small text-muted">(@Model.StartDate.ToShortDateString() đến @Model.EndDate.ToShortDateString())</p>
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            @foreach (var summary in Model.CategorySummaries)
+                            {
+                                <tr>
+                                    <td>@summary.CategoryName</td>
+                                    <td class="text-end fw-bold">@summary.TotalAmount.ToString("N0", culture)</td>
+                                </tr>
+                            }
+                            <tr class="border-top fs-6">
+                                <td class="fw-bold">TỔNG CỘNG</td>
+                                <td class="text-end fw-bold text-danger">@Model.CategorySummaries.Sum(s => s.TotalAmount).ToString("N0", culture)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light fw-bold text-success">💰 Tóm tắt thu nhập</div>
+                <div class="card-body">
+                    <p class="small text-muted">(@Model.StartDate.ToShortDateString() đến @Model.EndDate.ToShortDateString())</p>
+                    <table class="table table-sm table-borderless">
+                        <tbody>
+                            @foreach (var summary in Model.IncomeSummaries)
+                            {
+                                <tr>
+                                    <td>@summary.CategoryName</td>
+                                    <td class="text-end fw-bold text-success">@summary.TotalAmount.ToString("N0", culture)</td>
+                                </tr>
+                            }
+                            <tr class="border-top fs-6">
+                                <td class="fw-bold">TỔNG CỘNG</td>
+                                <td class="text-end fw-bold text-success">@Model.IncomeSummaries.Sum(s => s.TotalAmount).ToString("N0", culture)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bên phải -->
+        <div class="col-lg-7">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light fw-bold text-primary">📋 Chi tiết giao dịch</div>
+                <div class="card-body table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Danh mục</th>
+                                <th>Mô tả</th>
+                                <th class="text-end">Số tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Transactions)
+                            {
+                                var color = item.Category.Type == StaticDetails.Income ? "text-success" : "text-danger";
+                                <tr>
+                                    <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.Category.Name</td>
+                                    <td>@item.Description</td>
+                                    <td class="text-end fw-bold @color">@item.Amount.ToString("N0", culture)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            const labels = @Html.Raw(Json.Serialize(Model.TrendLabels));
+            const incomeData = @Html.Raw(Json.Serialize(Model.TrendIncomeData));
+            const expenseData = @Html.Raw(Json.Serialize(Model.TrendExpenseData));
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Tổng Thu',
+                            data: incomeData,
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        },
+                        {
+                            label: 'Tổng Chi',
+                            data: expenseData,
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            fill: true,
+                            tension: 0.1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
+                }
+            });
+
+            document.getElementById('exportPdfBtn').addEventListener('click', function () {
+                const chartCanvas = document.getElementById('trendChart');
+                const chartImageBase64 = chartCanvas.toDataURL('image/png');
+
+                const exportData = {
+                    startDate: '@Model.StartDate.ToString("o")',
+                    endDate: '@Model.EndDate.ToString("o")',
+                    categorySummaries: @Html.Raw(Json.Serialize(Model.CategorySummaries)),
+                    transactions: @Html.Raw(Json.Serialize(Model.Transactions)),
+                    chartImageBase64: chartImageBase64
+                };
+
+                fetch('/Report/ExportToPdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(exportData),
+                })
+                .then(response => response.blob())
+                .then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `BaoCao_ChiTieu_${new Date().toLocaleDateString('vi-VN')}.pdf`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Lỗi khi xuất PDF:', error));
+            });
+        });
+    </script>
+}

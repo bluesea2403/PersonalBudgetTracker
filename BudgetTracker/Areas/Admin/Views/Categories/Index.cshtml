@@ -1,0 +1,110 @@
+﻿@model IEnumerable<BudgetTracker.Models.Category>
+@using BudgetTracker.Models
+
+@{
+    ViewData["Title"] = "Quản lý Danh mục Chung";
+    var groupedCategories = Model
+        .GroupBy(c => c.Type)
+        .ToDictionary(g => g.Key, g => g.GroupBy(c => c.GroupName ?? "Chưa phân loại")
+        .ToDictionary(sg => sg.Key, sg => sg.ToList()));
+}
+
+<div class="content-page-container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <div>
+            <h1 class="page-title text-primary d-flex align-items-center">
+                <i class="fas fa-th-large me-2 text-secondary"></i>
+                @ViewData["Title"]
+            </h1>
+            <p class="text-muted mb-0">
+                <i class="fas fa-info-circle me-1"></i>
+                Các danh mục được tạo ở đây sẽ được áp dụng làm mặc định cho tất cả người dùng.
+            </p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a asp-action="Create" class="btn btn-success btn-lg shadow-sm">
+                <i class="fas fa-plus-circle me-2"></i> Tạo Danh mục chung mới
+            </a>
+        </div>
+    </div>
+</div>
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3 class="text-danger mb-3"><i class="fas fa-money-bill-wave me-2"></i>CHI TIÊU</h3>
+            @if (groupedCategories.ContainsKey(StaticDetails.Expense))
+            {
+                foreach (var group in groupedCategories[StaticDetails.Expense])
+                {
+                    <div class="card border-start border-danger border-4 mb-4 shadow-sm">
+                        <div class="card-header bg-light fw-bold text-danger">
+                            <i class="fas fa-folder-open me-2"></i>@group.Key
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in group.Value)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="@item.Icon fa-lg me-2 text-secondary"></i>
+                                        <span>@item.Name</span>
+                                    </div>
+                                    <div>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted fst-italic">Chưa có danh mục chi tiêu chung nào.</p>
+            }
+        </div>
+
+        <div class="col-md-6">
+            <h3 class="text-success mb-3"><i class="fas fa-donate me-2"></i>THU NHẬP</h3>
+            @if (groupedCategories.ContainsKey(StaticDetails.Income))
+            {
+                foreach (var group in groupedCategories[StaticDetails.Income])
+                {
+                    <div class="card border-start border-success border-4 mb-4 shadow-sm">
+                        <div class="card-header bg-light fw-bold text-success">
+                            <i class="fas fa-folder-open me-2"></i>@group.Key
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in group.Value)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <i class="@item.Icon fa-lg me-2 text-secondary"></i>
+                                        <span>@item.Name</span>
+                                    </div>
+                                    <div>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                            <i class="fas fa-edit"></i> Sửa
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash-alt"></i> Xóa
+                                        </a>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-muted fst-italic">Chưa có danh mục thu nhập chung nào.</p>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,146 @@
+﻿@model IPagedList<BudgetTracker.Models.Transaction>
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+
+@{
+    ViewData["Title"] = "Lịch sử Giao dịch";
+}
+
+<div class="transaction-page content-page-container">
+
+    <h1 class="page-title mb-4 text-info fw-bold">📒 @ViewData["Title"]</h1>
+
+    <!-- Bộ lọc giao dịch -->
+    <div class="card filter-card shadow-sm mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">🔍 Tìm theo mô tả</label>
+                    <input type="text" name="searchString" class="form-control" value="@ViewData["CurrentSearch"]" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">📂 Danh mục</label>
+                    <select name="categoryId" class="form-control" asp-items="@(ViewData["CategoryIdFilter"] as SelectList)">
+                        <option value="">Tất cả</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">📅 Từ ngày</label>
+                    <input type="date" name="startDate" class="form-control" value="@ViewData["CurrentStartDate"]" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">📅 Đến ngày</label>
+                    <input type="date" name="endDate" class="form-control" value="@ViewData["CurrentEndDate"]" />
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary mt-2 w-100"><i class="fas fa-filter"></i> Lọc</button>
+                    <a asp-action="Index" class="btn btn-secondary mt-2 w-100">Xóa bộ lọc</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Hành động -->
+    <div class="mb-3 d-flex flex-wrap gap-2">
+        <button onclick="showInPopup('@Url.Action("Create", "Transactions", null, Context.Request.Scheme)','Thêm giao dịch mới')" class="btn btn-success text-white">
+            <i class="fas fa-plus-circle"></i> Tạo Giao dịch
+        </button>
+
+        <button type="button" class="btn btn-info text-white" onclick="document.getElementById('invoiceUpload').click();"
+                data-bs-toggle="tooltip" title="Tự động trích xuất thông tin từ ảnh hóa đơn bằng OCR">
+            <i class="fas fa-camera"></i> Tạo từ Hóa đơn
+        </button>
+        <input type="file" id="invoiceUpload" class="d-none" onchange="uploadInvoice(this);" accept="image/*" />
+
+        <button id="delete-selected-btn" class="btn btn-danger" style="display: none;">
+            <i class="fas fa-trash-alt"></i> Xóa mục đã chọn
+        </button>
+
+        <a asp-action="ExportToCsv"
+           asp-controller="Transactions"
+           asp-route-searchString="@ViewData["CurrentSearch"]"
+           asp-route-categoryId="@ViewData["CurrentCategory"]"
+           asp-route-startDate="@ViewData["CurrentStartDate"]"
+           asp-route-endDate="@ViewData["CurrentEndDate"]"
+           class="btn btn-outline-secondary">
+            <i class="fas fa-file-csv"></i> Xuất Excel
+        </a>
+    </div>
+
+    <!-- Bảng giao dịch -->
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th><input type="checkbox" id="select-all-checkbox" /></th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["AmountSortParm"]"
+                           asp-route-searchString="@ViewData["CurrentSearch"]">💰 Số tiền</a>
+                    </th>
+                    <th>📝 Mô tả</th>
+                    <th>
+                        <a asp-action="Index" asp-route-sortOrder="@ViewData["DateSortParm"]"
+                           asp-route-searchString="@ViewData["CurrentSearch"]">📆 Ngày</a>
+                    </th>
+                    <th>📁 Danh mục</th>
+                    <th class="text-end">⚙️ Chức năng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><input type="checkbox" class="transaction-checkbox" value="@item.Id" /></td>
+                        <td class="fw-bold">@item.Amount.ToString("N0") đ</td>
+                        <td>@item.Description</td>
+                        <td>@item.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@item.Category?.Name</td>
+                        <td class="text-end">
+                            <button onclick="showInPopup('@Url.Action("Edit", "Transactions", new { id = item.Id }, Context.Request.Scheme)','Sửa giao dịch')" class="btn btn-info btn-sm text-white">Sửa</button>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Chi tiết</a>
+                            <a href="javascript:void(0);" onclick="confirmDelete(@item.Id)" class="btn btn-danger btn-sm">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Phân trang -->
+    <div class="d-flex justify-content-center mt-4">
+        @Html.PagedListPager(Model, page => Url.Action("Index",
+        new
+        {
+            page,
+            sortOrder = ViewData["CurrentSort"],
+            searchString = ViewData["CurrentSearch"],
+            categoryId = ViewData["CurrentCategory"],
+            startDate = ViewData["CurrentStartDate"],
+            endDate = ViewData["CurrentEndDate"]
+        }),
+                new PagedListRenderOptions
+                {
+                    LiElementClasses = new[] { "page-item" },
+                    PageClasses = new[] { "page-link" }
+                })
+    </div>
+</div>
+
+<!-- Modal popup -->
+<div class="modal fade" id="transactionModal" tabindex="-1" aria-labelledby="transactionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transactionModalLabel">Thêm/Sửa Giao dịch</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/site.js" asp-append-version="true"></script>
+}

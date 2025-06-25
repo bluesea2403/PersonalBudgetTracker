@@ -1,0 +1,92 @@
+﻿@model IEnumerable<BudgetTracker.Models.RecurringTransaction>
+
+@{
+    ViewData["Title"] = "Quản lý Giao dịch Định kỳ";
+}
+
+<div class="content-page-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title text-info">
+                <i class="fas fa-sync-alt me-2"></i> @ViewData["Title"]
+            </h1>
+            <p class="text-muted mb-0">🔁 Thiết lập các khoản thu/chi lặp lại hàng tháng một cách tự động và linh hoạt.</p>
+        </div>
+        <div>
+            <a asp-action="Create" class="btn btn-success shadow-sm">
+                <i class="fas fa-plus-circle me-1"></i> Tạo mẫu mới
+            </a>
+        </div>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info d-flex align-items-center" role="alert">
+            <i class="fas fa-info-circle me-2"></i>
+            Hiện chưa có giao dịch định kỳ nào. Hãy thêm một giao dịch mẫu để bắt đầu!
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-header bg-light fw-bold">
+                <i class="fas fa-list-alt me-1"></i> Danh sách Giao dịch Định kỳ
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-primary text-dark">
+                            <tr>
+                                <th>📝 Mô tả</th>
+                                <th>💸 Số tiền</th>
+                                <th>📅 Ngày lặp</th>
+                                <th>🏷️ Danh mục</th>
+                                <th class="text-center">⚙️ Trạng thái</th>
+                                <th class="text-end">🔧 Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.Description</td>
+                                    <td class="fw-bold text-@(item.Amount >= 0 ? "success" : "danger")">
+                                        @item.Amount.ToString("N0") đ
+                                    </td>
+                                    <td>Ngày @item.DayOfMonth</td>
+                                    <td>
+                                        <span class="badge bg-secondary">
+                                            <i class="@item.Category.Icon me-1"></i>
+                                            @item.Category.Name
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @(item.IsActive ? "bg-success" : "bg-secondary")">
+                                            <i class="fas @(item.IsActive ? "fa-check-circle" : "fa-pause-circle") me-1"></i>
+                                            @(item.IsActive ? "Hoạt động" : "Tạm dừng")
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <form asp-action="ToggleStatus" asp-route-id="@item.Id" method="post" class="d-inline">
+                                            <button type="submit"
+                                                    class="btn btn-sm @(item.IsActive ? "btn-warning" : "btn-success")"
+                                                    title="@(item.IsActive ? "Tạm dừng" : "Kích hoạt")">
+                                                <i class="fas @(item.IsActive ? "fa-pause" : "fa-play")"></i>
+                                            </button>
+                                        </form>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary ms-1" title="Sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger ms-1" title="Xóa">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

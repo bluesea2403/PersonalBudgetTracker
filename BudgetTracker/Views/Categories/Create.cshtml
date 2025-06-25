@@ -1,0 +1,22 @@
+﻿@model BudgetTracker.Models.Category
+
+@{
+    ViewData["Title"] = "Tạo Danh mục";
+}
+
+<h1>@ViewData["Title"]</h1>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <partial name="_CategoryForm" model="Model" />
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/category-form.js"></script>
+}

@@ -1,0 +1,40 @@
+﻿@model BudgetTracker.Models.Category
+
+@{
+    ViewData["Title"] = "Chi tiết Danh mục Chung";
+}
+
+<div class="content-page-container">
+    <h1 class="page-title">@ViewData["Title"]</h1>
+
+    <div>
+        <h4>@Model.Name</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3">
+                Tên Danh mục
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt class="col-sm-3">
+                Loại
+            </dt>
+            <dd class="col-sm-9">
+                @Html.DisplayFor(model => model.Type)
+            </dd>
+
+            <dt class="col-sm-3">
+                Icon
+            </dt>
+            <dd class="col-sm-9">
+                <i class="@Model.Icon fa-2x" title="@Model.Icon"></i>
+            </dd>
+        </dl>
+    </div>
+    <div class="mt-4">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">Sửa</a> |
+        <a asp-action="Index">Quay lại Danh sách</a>
+    </div>
+</div>

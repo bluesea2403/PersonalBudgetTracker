@@ -1,0 +1,58 @@
+﻿@model BudgetTracker.Models.FinancialGoal
+
+@{
+    ViewData["Title"] = "Sửa Mục tiêu";
+}
+
+<div class="content-page-container">
+    <h1 class="page-title text-warning">
+        <i class="fas fa-edit me-2"></i> @ViewData["Title"]: <span class="text-dark">@Model.Name</span>
+    </h1>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Name" class="form-label">🏷️ Tên Mục tiêu</label>
+                            <input asp-for="Name" class="form-control" placeholder="Nhập tên mục tiêu..." />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="TargetAmount" class="form-label">🎯 Số tiền mục tiêu</label>
+                            <input asp-for="TargetAmount" class="form-control" type="number" placeholder="Ví dụ: 10000000" />
+                            <span asp-validation-for="TargetAmount" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="Deadline" class="form-label">📅 Hạn hoàn thành</label>
+                            <input asp-for="Deadline" class="form-control" type="date" />
+                            <span asp-validation-for="Deadline" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Lưu thay đổi
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

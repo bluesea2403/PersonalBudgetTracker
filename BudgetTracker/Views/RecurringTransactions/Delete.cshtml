@@ -1,0 +1,51 @@
+﻿@model BudgetTracker.Models.RecurringTransaction
+
+@{
+    ViewData["Title"] = "Xóa Giao dịch Định kỳ";
+}
+
+<div class="content-page-container">
+    <div class="mb-4">
+        <h1 class="page-title text-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i> @ViewData["Title"]
+        </h1>
+        <h5 class="text-muted">Bạn có chắc chắn muốn xóa giao dịch định kỳ này?</h5>
+    </div>
+
+    <div class="card shadow-sm border-danger">
+        <div class="card-body">
+            <h5 class="card-title text-danger fw-bold">🗑️ Giao dịch sẽ bị xóa:</h5>
+            <dl class="row mb-0">
+                <dt class="col-sm-4 text-muted">📝 Mô tả</dt>
+                <dd class="col-sm-8">@Model.Description</dd>
+
+                <dt class="col-sm-4 text-muted">💰 Số tiền</dt>
+                <dd class="col-sm-8 text-success">@Model.Amount.ToString("N0") đ</dd>
+
+                <dt class="col-sm-4 text-muted">📅 Ngày trong tháng</dt>
+                <dd class="col-sm-8">Ngày @Model.DayOfMonth</dd>
+
+                <dt class="col-sm-4 text-muted">🕒 Xử lý lần cuối</dt>
+                <dd class="col-sm-8">
+                    @(Model.LastProcessedDate?.ToString("dd/MM/yyyy") ?? "Chưa có")
+                </dd>
+
+                <dt class="col-sm-4 text-muted">📁 Danh mục</dt>
+                <dd class="col-sm-8">@Model.Category?.Name</dd>
+
+            </dl>
+        </div>
+
+        <div class="card-footer d-flex justify-content-between">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt me-1"></i> Xác nhận xóa
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

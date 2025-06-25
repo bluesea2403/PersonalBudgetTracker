@@ -1,0 +1,100 @@
+﻿@model BudgetTracker.Models.Category
+
+@{
+    ViewData["Title"] = "Tạo Danh mục Chung";
+}
+
+<div class="content-page-container">
+    <h1 class="page-title text-primary">
+        <i class="fas fa-plus-circle me-2"></i>@ViewData["Title"]
+    </h1>
+    <p class="text-muted">Danh mục được tạo ở đây sẽ được dùng làm mặc định cho người dùng mới.</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-lg-7 col-md-9">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label fw-bold">Tên danh mục</label>
+                            <input asp-for="Name" class="form-control" placeholder="Nhập tên danh mục..." />
+                            <span asp-validation-for="Name" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="GroupName" class="form-label fw-bold">Nhóm danh mục</label>
+                            <select asp-for="GroupName" asp-items="ViewBag.CategoryGroups" class="form-select">
+                                <option value="">-- (Không thuộc nhóm nào) --</option>
+                            </select>
+                            <span asp-validation-for="GroupName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Type" class="form-label fw-bold">Loại giao dịch</label>
+                            <select asp-for="Type" asp-items="ViewBag.TypeList" class="form-select">
+                                <option value="">-- Chọn loại --</option>
+                            </select>
+                            <span asp-validation-for="Type" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Icon" class="form-label fw-bold">Chọn biểu tượng</label>
+                            <input type="hidden" asp-for="Icon" />
+                            <div id="icon-picker" class="d-flex flex-wrap gap-2 border rounded p-2">
+                                @if (ViewBag.Icons != null)
+                                {
+                                    foreach (var iconClass in ViewBag.Icons)
+                                    {
+                                        <div class="icon-item p-2 @(Model.Icon == iconClass ? "selected" : "")"
+                                             onclick="selectIcon(this, '@iconClass')"
+                                             title="@iconClass">
+                                            <i class="@iconClass fa-2x"></i>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            <span asp-validation-for="Icon" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <button type="submit" class="btn btn-primary shadow-sm">
+                                <i class="fas fa-save me-1"></i> Tạo
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary shadow-sm">
+                                <i class="fas fa-arrow-left me-1"></i> Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/category-form.js" asp-append-version="true"></script>
+    <style>
+        .icon-item {
+            cursor: pointer;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+            .icon-item:hover {
+                background-color: #f8f9fa;
+                transform: scale(1.05);
+            }
+
+            .icon-item.selected {
+                background-color: #0d6efd;
+                color: white;
+                border-color: #0a58ca;
+                box-shadow: 0 0 0 2px rgba(13,110,253,.25);
+            }
+    </style>
+}

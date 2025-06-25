@@ -1,0 +1,42 @@
+﻿@model BudgetTracker.Models.FinancialGoal
+
+@{
+    ViewData["Title"] = "Chi tiết Mục tiêu";
+}
+
+<div class="content-page-container">
+    <h1 class="page-title text-info">
+        <i class="fas fa-bullseye me-2"></i> @ViewData["Title"]
+    </h1>
+
+    <div class="card shadow-sm mt-4">
+        <div class="card-header bg-light">
+            <h4 class="mb-0 text-primary">
+                🎯 @Model.Name
+            </h4>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">💰 Số tiền mục tiêu</dt>
+                <dd class="col-sm-8">@Model.TargetAmount.ToString("N0") đ</dd>
+
+                <dt class="col-sm-4">📈 Đã tiết kiệm</dt>
+                <dd class="col-sm-8">@Model.CurrentAmount.ToString("N0") đ</dd>
+
+                <dt class="col-sm-4">📅 Hạn hoàn thành</dt>
+                <dd class="col-sm-8">
+                    @(Model.Deadline.HasValue? Model.Deadline.Value.ToString("dd/MM/yyyy") : "Không xác định")
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-3">
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">
+            <i class="fas fa-edit me-1"></i> Sửa
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Quay lại Danh sách
+        </a>
+    </div>
+</div>

@@ -1,0 +1,105 @@
+﻿@model IEnumerable<BudgetTracker.Models.Category>
+@using BudgetTracker.Models
+
+@{
+    ViewData["Title"] = "Quản lý Danh mục";
+
+    var groupedCategories = Model
+        .GroupBy(c => c.Type)
+        .ToDictionary(g => g.Key, g => g.GroupBy(c => c.GroupName ?? "Chưa phân loại")
+        .ToDictionary(sg => sg.Key, sg => sg.ToList()));
+}
+
+<div class="content-page-container">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title text-info"><i class="fas fa-folder-open me-2"></i>@ViewData["Title"]</h1>
+        <a asp-action="Create" class="btn btn-success"><i class="fas fa-plus-circle me-1"></i> Tạo Danh mục mới</a>
+    </div>
+
+    <div class="row">
+        <!-- Chi tiêu -->
+        <div class="col-md-6">
+            <h3 class="text-danger mb-3"><i class="fas fa-minus-circle me-2"></i>CHI TIÊU</h3>
+            @if (groupedCategories.ContainsKey(StaticDetails.Expense))
+            {
+                foreach (var group in groupedCategories[StaticDetails.Expense].OrderBy(g => g.Key))
+                {
+                    <div class="card mb-4 shadow-sm border-start border-3 border-danger">
+                        <div class="card-header bg-light fw-bold">
+                            <i class="fas fa-tag me-1 text-danger"></i> @group.Key
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in group.Value.OrderBy(i => i.Name))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="@item.Icon me-2 text-secondary"></i>
+                                        <span class="fw-semibold">@item.Name</span>
+                                        @if (item.UserId == null)
+                                        {
+                                            <span class="badge bg-info ms-2">Mặc định</span>
+                                        }
+                                    </div>
+                                    <div>
+                                        @if (item.UserId != null)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-edit"></i> Sửa
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash-alt"></i> Xóa
+                                            </a>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+        </div>
+
+        <!-- Thu nhập -->
+        <div class="col-md-6">
+            <h3 class="text-success mb-3"><i class="fas fa-plus-circle me-2"></i>THU NHẬP</h3>
+            @if (groupedCategories.ContainsKey(StaticDetails.Income))
+            {
+                foreach (var group in groupedCategories[StaticDetails.Income].OrderBy(g => g.Key))
+                {
+                    <div class="card mb-4 shadow-sm border-start border-3 border-success">
+                        <div class="card-header bg-light fw-bold">
+                            <i class="fas fa-tag me-1 text-success"></i> @group.Key
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in group.Value.OrderBy(i => i.Name))
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="@item.Icon me-2 text-secondary"></i>
+                                        <span class="fw-semibold">@item.Name</span>
+                                        @if (item.UserId == null)
+                                        {
+                                            <span class="badge bg-info ms-2">Mặc định</span>
+                                        }
+                                    </div>
+                                    <div>
+                                        @if (item.UserId != null)
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                                <i class="fas fa-edit"></i> Sửa
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash-alt"></i> Xóa
+                                            </a>
+                                        }
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

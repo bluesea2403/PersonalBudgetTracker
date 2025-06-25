@@ -1,0 +1,48 @@
+﻿@model BudgetTracker.Models.Budget
+
+@{
+    ViewData["Title"] = "Xóa Ngân sách";
+}
+
+<div class="content-page-container">
+    <div class="alert alert-warning d-flex align-items-center" role="alert">
+        <i class="fas fa-exclamation-triangle fa-lg me-2"></i>
+        <div>
+            Bạn có chắc chắn muốn <strong>xóa ngân sách</strong> sau không?
+        </div>
+    </div>
+
+    <div class="card border-danger shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <i class="fas fa-wallet me-1"></i> Chi tiết Ngân sách
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">📅 Tháng</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Month)</dd>
+
+                <dt class="col-sm-3">📆 Năm</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Year)</dd>
+
+                <dt class="col-sm-3">💰 Hạn mức</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Amount)</dd>
+
+                <dt class="col-sm-3">🏷️ Danh mục</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Category.Name)</dd>
+
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="Delete" class="mt-4">
+        <input type="hidden" asp-for="Id" />
+        <div class="d-flex justify-content-between">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+            </a>
+            <button type="submit" class="btn btn-danger px-4">
+                <i class="fas fa-trash-alt me-1"></i> Xóa ngân sách
+            </button>
+        </div>
+    </form>
+</div>

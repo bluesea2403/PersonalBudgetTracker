@@ -1,0 +1,53 @@
+﻿@model BudgetTracker.Models.Category
+
+<form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" asp-route-id="@Model.Id" class="bg-white p-4 rounded shadow-sm">
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label fw-semibold">📝 Tên danh mục</label>
+        <input asp-for="Name" class="form-control" placeholder="Nhập tên danh mục..." />
+        <span asp-validation-for="Name" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="GroupName" class="form-label fw-semibold">📁 Nhóm danh mục</label>
+        <select asp-for="GroupName" asp-items="ViewBag.CategoryGroups" class="form-select">
+            <option value="">-- (Không thuộc nhóm nào) --</option>
+        </select>
+        <span asp-validation-for="GroupName" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Type" class="form-label fw-semibold">🔁 Loại giao dịch</label>
+        <select asp-for="Type" asp-items="ViewBag.TypeList" class="form-select">
+            <option value="">-- Chọn loại --</option>
+        </select>
+        <span asp-validation-for="Type" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Icon" class="form-label fw-semibold">🎨 Biểu tượng</label>
+        <input type="hidden" asp-for="Icon" />
+        <div id="icon-picker" class="d-flex flex-wrap gap-2 border rounded p-3 bg-light">
+            @if (ViewBag.Icons != null)
+            {
+                foreach (var iconClass in ViewBag.Icons)
+                {
+                    <div class="icon-item p-2 border rounded text-center bg-white @(Model.Icon == iconClass ? "border-primary shadow selected" : "border-light")"
+                         style="cursor: pointer; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;"
+                         onclick="selectIcon(this, '@iconClass')">
+                        <i class="@iconClass fa-lg text-dark"></i>
+                    </div>
+                }
+            }
+        </div>
+        <span asp-validation-for="Icon" class="text-danger small d-block mt-1"></span>
+    </div>
+
+    <div class="d-flex justify-content-end mt-4">
+        <button type="submit" class="btn btn-primary px-4">
+            <i class="fas fa-save me-1"></i> Lưu
+        </button>
+    </div>
+</form>

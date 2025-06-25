@@ -1,0 +1,69 @@
+﻿@model BudgetTracker.Models.RecurringTransaction
+
+@{
+    ViewData["Title"] = "Tạo Giao dịch Định kỳ";
+}
+
+<div class="content-page-container">
+    <div class="mb-4">
+        <h1 class="page-title text-success">
+            <i class="fas fa-sync-alt me-2"></i> @ViewData["Title"]
+        </h1>
+        <p class="text-muted">Thiết lập một khoản thu/chi tự động lặp lại hàng tháng.</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="form-label">
+                        <i class="fas fa-file-alt me-1"></i> Mô tả
+                    </label>
+                    <input asp-for="Description" class="form-control" placeholder="Ví dụ: Trả tiền điện, Lương hàng tháng..." />
+                    <span asp-validation-for="Description" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Amount" class="form-label">
+                        <i class="fas fa-money-bill-wave me-1"></i> Số tiền
+                    </label>
+                    <input asp-for="Amount" class="form-control" placeholder="Nhập số tiền..." />
+                    <span asp-validation-for="Amount" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="DayOfMonth" class="form-label">
+                        <i class="fas fa-calendar-day me-1"></i> Ngày trong tháng
+                    </label>
+                    <input asp-for="DayOfMonth" class="form-control" type="number" min="1" max="28" placeholder="Ví dụ: 5 (mỗi tháng ngày 5)" />
+                    <span asp-validation-for="DayOfMonth" class="text-danger small"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="CategoryId" class="form-label">
+                        <i class="fas fa-tags me-1"></i> Danh mục
+                    </label>
+                    <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryId">
+                        <option value="">-- Chọn danh mục --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Quay lại
+                    </a>
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="fas fa-plus-circle me-1"></i> Tạo giao dịch
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

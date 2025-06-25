@@ -1,0 +1,64 @@
+﻿@model BudgetTracker.Models.RecurringTransaction
+
+@{
+    ViewData["Title"] = "Chỉnh sửa Giao dịch Định kỳ";
+}
+
+<div class="content-page-container">
+    <div class="mb-4">
+        <h1 class="page-title text-warning">
+            <i class="fas fa-pen-alt me-2"></i> @ViewData["Title"]
+        </h1>
+        <h5 class="text-muted">Cập nhật thông tin giao dịch lặp lại hàng tháng</h5>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label">📝 Mô tả</label>
+                            <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Amount" class="form-label">💰 Số tiền</label>
+                            <input asp-for="Amount" class="form-control" />
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DayOfMonth" class="form-label">📆 Ngày trong tháng</label>
+                            <input asp-for="DayOfMonth" class="form-control" type="number" min="1" max="28" />
+                            <span asp-validation-for="DayOfMonth" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label asp-for="CategoryId" class="form-label">📁 Danh mục</label>
+                            <select asp-for="CategoryId" class="form-control" asp-items="ViewBag.CategoryId">
+                                <option value="">-- Chọn danh mục --</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

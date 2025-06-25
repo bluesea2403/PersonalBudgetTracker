@@ -1,0 +1,143 @@
+﻿@model AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="content-page-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="page-title text-primary fw-bold"><i class="fas fa-tachometer-alt me-2"></i>@ViewData["Title"]</h1>
+            <p class="text-muted">📊 Tổng quan hệ thống dành cho Quản trị viên</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow border-0 h-100">
+                <div class="card-header bg-white border-bottom">
+                    <h6 class="mb-0 text-primary fw-semibold"><i class="fas fa-chart-pie me-2"></i>Tỉ lệ Người dùng theo Vai trò</h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="userRoleChart" style="height:300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thống kê chính -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow border-start-primary h-100 py-2">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-xs fw-bold text-primary text-uppercase mb-1">Tổng người dùng</div>
+                        <div class="h5 mb-0 fw-bold text-dark">@Model.TotalUsers</div>
+                    </div>
+                    <i class="fas fa-users fa-2x text-primary"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow border-start-success h-100 py-2">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-xs fw-bold text-success text-uppercase mb-1">Tổng giao dịch</div>
+                        <div class="h5 mb-0 fw-bold text-dark">@Model.TotalTransactions</div>
+                    </div>
+                    <i class="fas fa-exchange-alt fa-2x text-success"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow border-start-info h-100 py-2">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-xs fw-bold text-info text-uppercase mb-1">Ngân sách đã đặt</div>
+                        <div class="h5 mb-0 fw-bold text-dark">@Model.TotalBudgets</div>
+                    </div>
+                    <i class="fas fa-piggy-bank fa-2x text-info"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card shadow border-start-warning h-100 py-2">
+                <div class="card-body d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-xs fw-bold text-warning text-uppercase mb-1">Tài khoản bị khóa</div>
+                        <div class="h5 mb-0 fw-bold text-dark">@Model.LockedAccounts</div>
+                    </div>
+                    <i class="fas fa-user-lock fa-2x text-warning"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Người dùng mới -->
+    <div class="mt-5">
+        <h4 class="fw-semibold text-dark mb-3"><i class="fas fa-user-plus me-2 text-success"></i>Người dùng mới đăng ký</h4>
+        <div class="table-responsive shadow-sm rounded">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>👤 Họ và Tên</th>
+                        <th>📧 Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.RecentUsers)
+                    {
+                        <tr>
+                            <td>@user.FullName</td>
+                            <td>@user.Email</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/api/Admin/DashboardApi/UserRoleDistribution')
+                .then(response => response.json())
+                .then(result => {
+                    const ctx = document.getElementById('userRoleChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: result.labels,
+                            datasets: [{
+                                data: result.data,
+                                backgroundColor: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b'],
+                                hoverBackgroundColor: ['#2e59d9', '#17a673', '#dda20a', '#be2617'],
+                                hoverBorderColor: "rgba(234, 236, 244, 1)",
+                            }],
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    position: 'bottom'
+                                },
+                                tooltip: {
+                                    backgroundColor: "#fff",
+                                    titleColor: "#333",
+                                    bodyColor: "#666",
+                                    borderColor: "#ddd",
+                                    borderWidth: 1,
+                                    padding: 10
+                                }
+                            }
+                        },
+                    });
+                })
+                .catch(error => console.error('Error fetching chart data:', error));
+        });
+    </script>
+}
